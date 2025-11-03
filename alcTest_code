@@ -1,0 +1,35 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define MQ3pin A1
+
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+
+const float slope = 0.0152;
+const float intercept = -4.996;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Razina alkohola");
+}
+
+void loop() {
+  float sensorValue = analogRead(MQ3pin);
+  float promiles = (sensorValue - 330) * slope + intercept;
+
+  if (promiles < 0) {
+    promiles = 0;
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.println(promiles, 1);
+
+  if (promiles > 0.5) {
+    lcd.println("kazna!");
+  } else {
+    lcd.setCursor(3, 1);
+    lcd.print("promila OK");
+  }
+}
